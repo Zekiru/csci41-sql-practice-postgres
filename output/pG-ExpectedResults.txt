@@ -10,12 +10,6 @@ Prompt:
 Retrieve the title, cost, retail, and calculated profit (retail minus cost) for 
 all books in the 'Computer' category. Sort the results by profit in descending order.
 
-Query:
-SELECT title, cost, retail, (retail - cost) AS profit
-FROM book
-WHERE category = 'Computer'
-ORDER BY profit DESC;
-
 Output:
             title            | cost  | retail | profit 
 -----------------------------+-------+--------+--------
@@ -31,11 +25,6 @@ PROBLEM 2: NULL Value Filtering
 Prompt:
 Find all orders that have not yet shipped. Display the orderno, customerno, 
 orderdate, and shipdate.
-
-Query:
-SELECT orderno, customerno, orderdate, shipdate
-FROM orders
-WHERE shipdate IS NULL;
 
 Output:
  orderno | customerno | orderdate  | shipdate 
@@ -53,12 +42,6 @@ PROBLEM 3: Inner Joins & Column Aliasing
 Prompt:
 List all book titles along with their category and publisher name. Alias the 
 publisher's name column as publisher_name and order alphabetically by book title.
-
-Query:
-SELECT b.title, b.category, p.name AS publisher_name
-FROM book b
-JOIN publisher p ON b.pubid = p.pubid
-ORDER BY title ASC;
 
 Output:
             title            |  category  | publisher_name 
@@ -83,12 +66,6 @@ Prompt:
 List all publishers and any books they have published. Ensure publishers with 
 no published books are still included in the result set. Sort by publisher ID.
 
-Query:
-SELECT p.pubid, p.name, b.title
-FROM publisher p
-LEFT JOIN book b ON p.pubid = b.pubid
-ORDER BY p.pubid ASC;
-
 Output:
  pubid |      name      |            title            
 -------+----------------+-----------------------------
@@ -112,12 +89,6 @@ PROBLEM 5: Basic Multi-Table Joins
 Prompt:
 Display the order number, customer first name, customer last name, and order date 
 for every placed order. Sort by order number ascending.
-
-Query:
-SELECT o.orderno, c.firstname, c.lastname, o.orderdate
-FROM orders o
-JOIN customer c ON o.customerno = c.customerno
-ORDER BY o.orderno;
 
 Output:
  orderno | firstname | lastname | orderdate  
@@ -145,13 +116,6 @@ Prompt:
 Retrieve the book title and author's first and last name for all books. Join 
 across the bookauthor bridge table and sort by title, then author last name.
 
-Query:
-SELECT b.title, a.fname, a.lname
-FROM bookauthor ba
-INNER JOIN book b ON ba.isbn = b.isbn
-INNER JOIN author a ON ba.authorid = a.authorid
-ORDER BY b.title, a.lname;
-
 Output:
             title            | fname |  lname  
 -----------------------------+-------+---------
@@ -176,14 +140,6 @@ Find each customer who was referred by another customer. Display the customer's
 ID, full name (as customer_name), and the full name of the referring customer 
 (as referred_by_name).
 
-Query:
-SELECT 
-    c.customerno,
-    c.firstname || ' ' || c.lastname AS customer_name,
-    r.firstname || ' ' || r.lastname AS referred_by_name
-FROM customer r
-JOIN customer c ON r.customerno = c.referredby;
-
 Output:
  customerno |  customer_name  | referred_by_name 
 ------------+-----------------+------------------
@@ -202,14 +158,6 @@ Prompt:
 Display all line items for Order 1007. Include order number, item number, book 
 title, quantity ordered, and retail price. Sort by item number.
 
-Query:
-SELECT o.orderno, oi.itemno, b.title, oi.quantity, b.retail
-FROM orders o
-JOIN orderitem oi ON o.orderno = oi.orderno
-JOIN book b ON oi.isbn = b.isbn
-WHERE o.orderno = 1007
-ORDER BY oi.itemno;
-
 Output:
  orderno | itemno |       title        | quantity | retail 
 ---------+--------+--------------------+----------+--------
@@ -226,14 +174,6 @@ Prompt:
 Find all customers who have placed at least 2 orders. Display customer ID, 
 first name, last name, and total order count. Sort by order count descending, 
 then customer ID ascending.
-
-Query:
-SELECT c.customerno, c.firstname, c.lastname, COUNT(o.orderno) AS order_count
-FROM customer c
-JOIN orders o ON c.customerno = o.customerno
-GROUP BY c.customerno, c.firstname, c.lastname
-HAVING COUNT(o.orderno) >= 2
-ORDER BY COUNT(o.orderno) DESC, c.customerno ASC;
 
 Output:
  customerno | firstname | lastname | order_count 
@@ -253,21 +193,6 @@ Prompt:
 Generate a detailed receipt breakdown for Order 1012. Show full customer name, 
 order date, book title, quantity, retail price, and calculated item_total. Sort 
 descending by item total.
-
-Query:
-SELECT 
-    c.firstname || ' ' || c.lastname AS customer_name,
-    o.orderdate,
-    b.title,
-    oi.quantity,
-    b.retail,
-    (oi.quantity * b.retail) AS item_total
-FROM orders o
-JOIN customer c ON o.customerno = c.customerno
-JOIN orderitem oi ON o.orderno = oi.orderno
-JOIN book b ON oi.isbn = b.isbn
-WHERE o.orderno = 1012
-ORDER BY item_total DESC;
 
 Output:
  customer_name | orderdate  |       title        | quantity | retail | item_total 
